@@ -1,0 +1,202 @@
+<html>
+	<head>
+		<meta charset="UTF-8"/>
+		<script src="./lib/react.js"></script>
+		<script src="./lib/react-dom.js"></script>
+		<script src="./lib/babel.min.js"></script>
+		<script type="text/babel">
+			class HeaderComponent extends React.Component{
+				render() {
+					return (
+						<div style={{margin:"0px 300px 0px 600px"}}>
+							<h1 >E-Cart</h1>
+						</div>
+						
+					);
+				}
+			}
+			
+			class MainComponent extends React.Component{
+				constructor(){
+					super();
+					this.state = {
+						check:false,
+						products : [
+							{id:1,name:'Watch',price:2000},
+							{id:2,name:'Mobile',price:15000},
+							{id:3,name:'Bag',price:1020},
+							{id:4,name:'Shoes',price:8000}
+						],
+						cart : [],
+						totalPrice : 0,
+						username : ''
+					}
+					this.changeState = this.changeState.bind(this);
+					this.login = this.login.bind(this);
+					this.calculateTotalPrice = this.calculateTotalPrice.bind(this);
+					this.getProductBasedOnId = this.getProductBasedOnId.bind(this);
+					this.logout = this.logout.bind(this);
+				}
+				changeState(){
+					console.log("changeState called");
+					this.setState({
+						check:!this.state.check
+					});
+					console.log(this.state.check+"----");
+				}
+				login(event){
+					event.preventDefault();
+					console.log("login called");
+					this.changeState();
+					var username = document.getElementById("username").value;
+					this.setState({
+						username
+					})
+				}
+				logout(){
+					this.changeState();
+					
+				}
+				getProductBasedOnId(id) {
+					console.log("selected cart"+id);
+					for (var i = 0; i < this.state.products.length; i++) {
+						console.log(this.state.products[i].name+"----product");
+						if(this.state.products[i].id == id){
+							this.state.cart.push(this.state.products[i]);
+							this.setState({
+								cart: this.state.cart
+							});
+						}
+						console.log(this.state.cart[i]+"-----cart");
+					}
+				}
+				calculateTotalPrice(){
+					let totalPrice=0;
+					for(var i=0; i<this.state.cart.length;i++){
+						totalPrice = this.state.cart[i].price + totalPrice;
+						console.log(totalPrice+"--------");
+					}
+					this.setState({
+						totalPrice
+					})
+					console.log(totalPrice);
+				}
+				render() {
+					if(this.state.check){
+						return(
+							<div>
+								<div style={{margin:"0px 300px 0px 600px"}}>
+									<h3>{'Welcome ' + this.state.username}</h3>
+								</div>	
+								<div style={{float:"left",margin:"0px 0px 0px 350px"}}>
+									<h3>Products</h3>
+									{this.state.products.map((item, index) => (
+										<RenderProduct 
+											key={item.id.toString()}
+											name={item.name} 
+											price={`Rs. ` + item.price + `/- only`}
+											getProductBasedOnId={(id) => { this.getProductBasedOnId(item.id); }}
+										/>
+									))}
+								</div>
+								<div style={{float:"right",margin:"0px 350px 0px 0px"}}>
+									<h3>Your Cart</h3>
+									{this.state.cart.map((item, index) => (
+										<RenderCart 
+										key={item.id.toString()}
+										name={item.name} 
+										price={`Rs. ` + item.price + `/- only`}
+										/>
+									))}
+								</div>
+								<div style={{margin:"500px 150px 0px 600px"}}>			
+									<button onClick={this.calculateTotalPrice}>Buy</button>
+									<p>Total Cost : Rs.{this.state.totalPrice}/- </p>
+								</div>
+								<button onClick={this.logout} style={{margin:"0px 150px 100px 600px"}}>Logout</button>
+							</div>
+						);
+					}
+					else{
+						return(
+							<Form login={this.login} />
+						);	
+					}	
+				}
+			}
+			
+		class RenderProduct extends React.Component {
+			render() {
+				return(
+			            <div>
+			                <p>{this.props.name}</p>
+			                <p>{this.props.price}</p>
+							<button onClick={this.props.getProductBasedOnId}>ADD TO CART</button>
+			            </div>	
+				);
+			}
+		}
+		
+		class RenderCart extends React.Component {
+			render() {
+				return(					
+					<div > 
+			            <p>{this.props.name}</p>
+			            <p>{this.props.price}</p>
+			        </div>					
+				);
+			}
+		}
+			
+			const Form = (props) =>(
+				<form onSubmit={props.login} style={{margin:"100px 200px 100px 500px"}}>
+					<table>
+						<tbody>
+							<tr>
+								<td>UserName :</td>
+								<td><input type="text" id="username" /></td>
+							</tr>
+							<tr>
+								<td>Password :</td>
+								<td> <input type="password" /></td>
+							</tr>
+							<tr>
+								<td></td>
+								<td><button type="submit">Submit</button></td>
+							</tr>
+						</tbody>
+									
+					</table>
+							
+				</form>
+			);
+			
+			class FooterComponent extends React.Component{
+				render() {
+					return (
+						<h4 style={{margin:"400px 300px 100px 550px"}}>Created By Maithili Pande</h4>
+					);
+				}
+			}
+			
+			class AppComponent extends React.Component{
+				render(){
+					return (
+						<div>
+							<HeaderComponent/>
+							<MainComponent/>
+							<FooterComponent/>
+						</div>
+						
+					);
+				}
+			}
+			function onload(){
+				ReactDOM.render(<AppComponent/>,document.getElementById("app"));
+			}
+		</script>
+	</head>
+	<body onload="onload()">
+		<div id="app"></div>
+	</body>
+</html>
